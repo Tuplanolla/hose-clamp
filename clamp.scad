@@ -275,7 +275,7 @@ deform_range = function (x) sin(90 * x) ^ 2;
 scription = circumcircle() / incircle();
 
 /// We use this shape to render the boss and create the recess for it.
-module boss(anchor = CENTER, spin = 0, orient = UP) {
+module boss(anchor = CENTER, spin = 0, orient = UP)
   let (boss_width = (boss_outer_diameter - boss_inner_diameter) / 2)
   if (boss_width > 0 && boss_height > 0)
     /// The ratio of height to width controls the eccentricity
@@ -292,14 +292,13 @@ module boss(anchor = CENTER, spin = 0, orient = UP) {
         d = boss_outer_diameter,
         anchor = anchor, spin = spin, orient = orient)
     children();
-}
 
 /// We need an M5 bolt with a round head and a hex drive,
 /// but this is not supported out of the box.
 /// Thus, we split an M5 bolt into its shaft and head,
 /// add a round head to the split shaft and
 /// replicate the hex drive from the split head into the round head.
-module bolt() {
+module bolt()
   let (info = screw_info("M5", head = "flat", drive = "hex"))
   attachable(h = bolt_length + bolt_head_height,
              d = bolt_diameter,
@@ -328,7 +327,6 @@ module bolt() {
 
     children();
   }
-}
 
 /// Make sure the bolt has a standard drive size.
 let (info = screw_info("M5", head = "flat", drive = "hex")) {
@@ -340,14 +338,13 @@ let (info = screw_info("M5", head = "flat", drive = "hex")) {
 
 /// The washer does not follow any standards.
 /// It is whatever could be found in the drawer.
-module washer(anchor = CENTER, spin = 0, orient = UP) {
+module washer(anchor = CENTER, spin = 0, orient = UP)
   tube(h = washer_thickness,
        od = washer_outer_diameter,
        id = washer_inner_diameter,
        chamfer = washer_thickness / 3,
        anchor = anchor, spin = spin, orient = orient)
   children();
-}
 
 /// The bolt should be tightened until it sits on the threads properly.
 /// Without a washer, 45 degrees is good, and

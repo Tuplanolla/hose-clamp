@@ -1,3 +1,4 @@
+OPENSCAD=openscad
 PNGFN=256
 STLFN=64
 
