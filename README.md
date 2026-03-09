@@ -12,7 +12,7 @@ attaching a garden hose to the wall.
 It also serves as a practical demonstration
 of building fully constrained models with filleting and rounding.
 
-![Close-up photo of the finished 3d prints](near.jpg)
+![Close-up photo of finished 3d prints](near.jpg)
 
 The default settings produce
 a Tektro brake hose clamp for the Tandell PLUS29 Boost fork.
@@ -41,6 +41,6 @@ See the source code for details.
 | `clamp.scad`         | Source code of the parametric model
 | `flexible-clamp.png` | Rendered image with default settings
 | `flexible-clamp.stl` | Generated mesh with default settings
-| `far.jpg`            | Photo of the finished 3d prints
-| `near.jpg`           | Close-up photo of the finished 3d prints
+| `far.jpg`            | Photo of finished 3d prints
+| `near.jpg`           | Close-up photo of finished 3d prints
 | `clamps.png`         | Rendered montage with different settings
