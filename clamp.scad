@@ -17,7 +17,7 @@ function lirp(c, d, v) =
 
 /// Linearly (or affinely) remap the value `v` from `c` to `d`
 /// to the value `u` from `a` to `b`.
-function lrp (c, d, a, b, v) =
+function lrp(c, d, a, b, v) =
 lerp(a, b, lirp(c, d, v));
 
 /// Compute the radius (or diameter) `a`
@@ -25,7 +25,7 @@ lerp(a, b, lirp(c, d, v));
 /// from the radius (or diameter) `b` of its circumscribed circle.
 /// The default value for `n` is derived
 /// from the current `$fn`, `$fa` and `$fs`.
-function incircle(b = 1, n = undef)
+function incircle(b = 1, n = undef) =
 let (n = is_def(n) ? n : segs(b))
 b * cos(180 / n);
 
@@ -42,8 +42,7 @@ a / cos(180 / n);
 
 $draft = ! true;
 $fn = 16;
-$eps = 1e-3;
-$inf = 1 / $eps;
+$e = 1e-3;
 
 /// Let us first establish some terminology.
 /// The part is called a clamp and it is used
@@ -233,7 +232,7 @@ body_length = max(guide_length, guide_outer_diameter,
 /// Hollowing the guide and cutting the clamp benefit
 /// from knowing the maximum dimensions of the clamp in any direction.
 hollowing_depth = body_length + 2 * abs(offset_z)
-                               + sin(abs(cut_angle)) * body_length;
+                              + sin(abs(cut_angle)) * body_length;
 
 /// The holes should not be offset or twisted so much
 /// that the clamp breaks due to self-intersections.
@@ -250,7 +249,7 @@ echo(min_offset_x = min_offset_x, offset_x = offset_x);
 
 max_offset_y = cut_gap && cut_straight ?
                guide_inner_diameter / 2 - cut_size / 2 :
-               $inf;
+               1 / $e;
 echo(max_offset_y = max_offset_y, offset_y = offset_y);
 * assert(abs(offset_y) <= max_offset_y);
 
@@ -317,11 +316,11 @@ attachable(h = bolt_length + bolt_head_height,
                     "head_size", bolt_head_diameter,
                     /// The head height must be positive,
                     /// even if there is no head.
-                    "head_height", max($eps, bolt_head_height),
+                    "head_height", max($e, bolt_head_height),
                     "drive", "none",
-                    "length", max($eps, bolt_length)]),
+                    "length", max($e, bolt_length)]),
         anchor = "head_bot")
-  attach("head_top", TOP, inside = true, shiftout = $eps)
+  attach("head_top", TOP, inside = true, shiftout = $e)
   hex_drive_mask(struct_val(info, "drive_size"),
                  struct_val(info, "drive_depth"));
 
@@ -368,9 +367,9 @@ if (render_attachments) {
     move([0, 0, - flaps_depth / 2])
     diff()
     boss(anchor = TOP)
-    attach(TOP, TOP, inside = true, shiftout = $eps)
-    cyl(h = boss_counterbore_depth + 3 * $eps, d = boss_counterbore_diameter)
-    attach(BOT, "shaft_bot", inside = true, shiftout = - $eps)
+    attach(TOP, TOP, inside = true, shiftout = $e)
+    cyl(h = boss_counterbore_depth + 3 * $e, d = boss_counterbore_diameter)
+    attach(BOT, "shaft_bot", inside = true, shiftout = - $e)
     screw_hole(struct_set(screw_info("M5", head = "none", drive = "none"),
                           ["length", boss_depth - boss_counterbore_depth]),
                thread = true);
@@ -378,13 +377,13 @@ if (render_attachments) {
   /// Draw the bolt with the optional washer.
   % color(metal, 0.5)
     rot([90, bolt_turn, 0])
-    move([0, 0, flaps_depth / 2 + $eps])
+    move([0, 0, flaps_depth / 2 + $e])
     if (use_washer)
       washer(anchor = BOT)
       /// We do not mention the child anchor `CENTER`,
       /// because its orientation may be that
       /// of either `"head_bot"` or `"shaft_top"`.
-      attach(TOP, overlap = - $eps)
+      attach(TOP, overlap = - $e)
       bolt();
     else
       bolt();
@@ -440,9 +439,9 @@ difference() {
 
       if (trim_edges)
         rot([cut_angle, 0, 0])
-        cube([scription * guide_outer_diameter / 2 + $eps,
-              scription * guide_outer_diameter + 2 * $eps,
-              guide_length + 2 * $eps],
+        cube([scription * guide_outer_diameter / 2 + $e,
+              scription * guide_outer_diameter + 2 * $e,
+              guide_length + 2 * $e],
              anchor = [sign(offset_x), 0, 0]);
     }
 
@@ -454,9 +453,9 @@ difference() {
             chamfer = flap_chamfer_size);
 
         if (trim_edges)
-          cube([scription * head_diameter / 2 + $eps,
-                scription * head_diameter + 2 * $eps,
-                flaps_depth + 2 * $eps],
+          cube([scription * head_diameter / 2 + $e,
+                scription * head_diameter + 2 * $e,
+                flaps_depth + 2 * $e],
                anchor = [sign(- offset_x), 0, 0]);
       }
   }
@@ -465,8 +464,8 @@ difference() {
   move([offset_x, offset_y, offset_z])
   rot([cut_angle, 0, 0])
   cyl(h = hollowing_depth,
-      d = guide_inner_diameter + 2 * $eps,
-      extra = $eps,
+      d = guide_inner_diameter + 2 * $e,
+      extra = $e,
       chamfer = - (hollowing_depth / 2 - guide_length / 2
                                         + guide_chamfer_size));
 
@@ -474,17 +473,17 @@ difference() {
   if (cut_gap) {
     if (cut_straight) {
       /// Cut from the center of the guide to its edge.
-      move([offset_x - $eps, 0, 0])
-      cube([guide_inner_diameter / 2 + 2 * $eps,
+      move([offset_x - $e, 0, 0])
+      cube([guide_inner_diameter / 2 + 2 * $e,
             cut_size,
-            hollowing_depth + 2 * $eps],
+            hollowing_depth + 2 * $e],
            anchor = [sign(offset_x), 0, 0]);
 
       /// Cut from the edge of the guide to the center of the flaps.
       move([offset_x + guide_inner_diameter / 2, 0, 0])
       cube([abs(offset_x) - guide_inner_diameter / 2,
             cut_size,
-            hollowing_depth + 2 * $eps],
+            hollowing_depth + 2 * $e],
            anchor = [sign(offset_x), 0, 0]);
 
       /// Remove the sharpest edge inside the guide.
@@ -492,7 +491,7 @@ difference() {
       move([0, - offset_y / 2, 0])
       cube([guide_inner_diameter / 2,
             abs(offset_y),
-            hollowing_depth + 2 * $eps],
+            hollowing_depth + 2 * $e],
            anchor = [sign(offset_x), 0, 0]);
 
       /// Chamfer the removed edges.
@@ -506,7 +505,7 @@ difference() {
            slices = 0,
            /// Skinning does not accept an extra length parameter,
            /// so we have to account for it by hand.
-           z = [- hollowing_depth / 2 - $eps, hollowing_depth / 2 + $eps]);
+           z = [- hollowing_depth / 2 - $e, hollowing_depth / 2 + $e]);
     } else {
       rot([0, 90, 0])
       let ($fn = max(2, floor($fn / 2)))
@@ -518,28 +517,28 @@ difference() {
                                                  abs(offset_x) - guide_inner_diameter / 2
                                                                - guide_chamfer_size))
                                     y <= deform_range(x) ?
-                                    rect([hollowing_depth + 2 * $eps, cut_size]) :
-                                    rect(lerp([hollowing_depth + 2 * $eps, cut_size],
-                                              [hollowing_depth + 2 * $eps, guide_inner_diameter],
+                                    rect([hollowing_depth + 2 * $e, cut_size]) :
+                                    rect(lerp([hollowing_depth + 2 * $e, cut_size],
+                                              [hollowing_depth + 2 * $e, guide_inner_diameter],
                                               lrp(deform_range(x), 1, 0, 1, y)))))],
            slices = 0,
            refine = floor($fn * hollowing_depth / (2 * abs(offset_x))),
            z = [for (i = [0 : $fn - 1])
                 let (x = deform_domain(i / ($fn - 1)))
-                lerp($eps, offset_x - $eps, x)]);
+                lerp($e, offset_x - $e, x)]);
     }
 
     /// Cut from the center of the flaps to their edge.
-    move([- $eps, 0, 0])
-    cube([scription * head_diameter / 2 + 2 * $eps,
+    move([- $e, 0, 0])
+    cube([scription * head_diameter / 2 + 2 * $e,
           cut_size,
-          hollowing_depth + 2 * $eps],
+          hollowing_depth + 2 * $e],
          anchor = [sign(offset_x), 0, 0]);
   }
 
   /// Perforate the flaps.
   rot([90, 0, 0]) {
-    cyl(h = flaps_depth - 2 * $eps, d = bolt_diameter, extra = $eps) {
+    cyl(h = flaps_depth - 2 * $e, d = bolt_diameter, extra = $e) {
       /// Cut the recess for the bolt and the optional washer.
       attach(TOP, BOT) {
         /// This is a less fancy way
@@ -547,15 +546,15 @@ difference() {
         /// Alas, it may intersect the guide and create a hole
         /// when the offsets are just right.
         if ($draft)
-          cyl(h = hollowing_depth + 2 * $eps,
-              d = head_diameter + 2 * $eps,
+          cyl(h = hollowing_depth + 2 * $e,
+              d = head_diameter + 2 * $e,
               chamfer1 = flap_chamfer_size,
               anchor = BOT);
         else
-          let (d = head_diameter - 2 * flap_chamfer_size + 2 * $eps,
+          let (d = head_diameter - 2 * flap_chamfer_size + 2 * $e,
                n = floor($fn * hollowing_depth / (PI * d)))
           skin([circle(d = d), ellipse(d = [d, d + 2 * hollowing_depth])],
-               z = [0, hollowing_depth + 2 * $eps],
+               z = [0, hollowing_depth + 2 * $e],
                /// We add slices
                /// to make the tessellation less acutely angled.
                slices = n);
@@ -564,9 +563,9 @@ difference() {
       /// Cut the recess for the boss.
       attach(BOT, TOP)
       /// This prevents z-fighting at the top of the boss.
-      move([0, 0, - $eps])
+      move([0, 0, - $e])
       /// This prevents z-fighting along the perimeter of the boss.
-      scale(1 + 2 * $eps / boss_outer_diameter)
+      scale(1 + 2 * $e / boss_outer_diameter)
       boss();
     }
   }
